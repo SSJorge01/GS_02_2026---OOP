@@ -1,60 +1,48 @@
-# 🌧️ Territory Predictive Insights - Sistema de Monitoramento Climático e de Alagamentos
+# Territory Predictive Insights - Sistema de Monitoramento Climático e de Alagamentos
 
-O sistema tem como objetivo monitorar sensores meteorológicos e de nível de água em tempo real, emitir alertas automáticos de risco de enchentes, aplicar estratégias de previsão polimórficas e persistir os dados utilizando arquitetura em camadas com Spring Boot e banco de dados H2.
-
----
-
-## 🛠️ Tecnologias e Ferramentas Utilizadas
-* **Java 21 / 26**
-* **Spring Boot 4.x** (Spring Data JPA, H2 Database)
-* **Maven** (Gerenciamento de Dependências e Build)
-* **JUnit 5 & Mockito** (Testes Unitários automatizados)
+Projeto desenvolvido para a **Global Solution (GS 2026.2)** da disciplina de **Object-Oriented Programming (OOP)**.
 
 ---
 
-## 🏛️ Arquitetura do Projeto e Padrões de Projeto (Design Patterns)
-
-O projeto segue estritamente os princípios de Orientação a Objetos e Separation of Concerns (SoC), dividido em camadas limpas:
-
-1. **Camada de Domínio (`dominio`)**: 
-   * Entidades de negócio (`Medicao`, `Alerta`).
-   * Hierarquia de Sensores (`Sensor` como classe/interface base, e implementações como `SensorPluviometro`, `SensorNivelAgua`, `SensorUmidadeSolo`).
-2. **Camada de Persistência (`persistencia`)**:
-   * Repositórios Spring Data JPA (`MedicaoRepository`, `AlertaRepository`) integrados com o banco de dados em memória H2.
-3. **Camada de Serviço (`servico`)**:
-   * `ServicoMonitoramento`: Concentra a regra de negócio principal (validação de sensores, gravação de medições e checagem de limiares críticos para emissão de alertas).
-   * `SistemaMonitoramento`: Implementa `CommandLineRunner` para gerenciar a interface de menu interativo via console.
-4. **Design Patterns Aplicados**:
-   * **Singleton (`ConfiguracaoSistema`)**: Garante uma instância única global para gerenciamento dos limiares críticos de chuva e nível de água da aplicação.
-   * **Strategy (`EstrategiaPrevisao`)**: Utiliza polimorfismo para alternar dinamicamente entre diferentes algoritmos de previsão meteorológica (`PrevisaoMediaMovel` e `PrevisaoComparacao`).
+## 1. Público Beneficiado e Tomada de Decisão
+* **Quem sofre o problema:** Moradores de comunidades urbanas vulneráveis a enchentes e alagamentos rápidos em períodos de chuvas intensas, além de equipes de defesa civil e associações de bairro.
+* **Qual decisão o sistema apoia:** O sistema processa leituras de sensores e emite alertas automáticos (Atenção, Alerta, Crítico) fundamentados em dados históricos persistidos. Ele **apoia** a decisão humana (permitindo que gestores e equipes de apoio evacuem áreas de risco ou acionem bombas de drenagem a tempo), sem tomar decisões autônomas no lugar das pessoas.
 
 ---
 
-## 🧪 Testes Automatizados (JUnit 5 + Mockito)
+## 2. Tecnologias e Arquitetura
+* **Linguagem:** Java 21 / 26
+* **Framework:** Spring Boot 4.x
+* **Persistência:** Spring Data JPA com banco de dados em memória **H2** (configurado automaticamente via Spring Boot, sem necessidade de instalação externa)
+* **Build:** Maven
+* **Testes:** JUnit 5 e Mockito (padrão AAA, `assertThrows` e mocks de repositório)
 
-O projeto conta com uma suíte robusta de testes unitários que cobrem:
-* Padrão **AAA (Arrange, Act, Assert)**.
-* Validação de exceções customizadas (`DadosInvalidosException`) utilizando `assertThrows`.
-* Isolamento de componentes e repositórios através de mocks com **Mockito**.
-
-Para executar os testes automatizados pelo terminal:
-
-```bash
-mvn test
-```
+O projeto segue os princípios de Orientação a Objetos (abstração, encapsulamento, herança e polimorfismo) e arquitetura em camadas (`dominio`, `persistencia`, `servico`, `excecao`).
 
 ---
 
-## 🚀 Como Executar o Projeto
+## 3. Padrões de Projeto (Design Patterns)
+* **Singleton (`ConfiguracaoSistema`):** Escolhido para gerenciar os limiares críticos de chuva e nível de água da aplicação.
+  * *Por que?* Garantimos que exista uma única instância global de configuração compartilhada por todo o sistema em tempo de execução, evitando inconsistências de parâmetros e mantendo o construtor privado.
+* **Strategy (`EstrategiaPrevisao`):** Utilizado através de polimorfismo (`PrevisaoMediaMovel` e `PrevisaoComparacao`) para calcular tendências sobre o histórico do banco sem o uso de estruturas condicionais (`if/else` ou `instanceof`).
 
-1. Certifique-se de ter o **Java JDK** e o **Maven** configurados em sua máquina.
-2. Clone ou abra o projeto na sua IDE (como IntelliJ IDEA).
-3. Execute a classe principal do Spring Boot:
-   `src/main/java/br/com/territorio/territorypredictiveinsights/TerritoryPredictiveInsightsApplication.java`
-4. O menu interativo do sistema será iniciado automaticamente no console, permitindo:
-   * **Opção 1**: Efetuar a leitura dos sensores e registrar medições/alertas.
-   * **Opção 2**: Executar previsões baseadas em estratégias polimórficas.
-   * **Opção 3**: Consultar o histórico de medições gravadas no banco H2.
-   * **Opção 4**: Visualizar os alertas críticos emitidos.
-   * **Opção 5**: Gerenciar e atualizar os limiares do sistema via Padrão Singleton.
-   * **Opção 0**: Sair do sistema.
+---
+
+## 4. Reflexão Crítica
+1. **Quando o sistema deve se calar?**
+   O sistema deve se abster de emitir previsões ou alertas apenas quando houver escassez de dados — por exemplo, com menos de 5 leituras válidas registradas no banco. Nesses casos, a média móvel carece de significância estatística, e o sistema deve sinalizar insuficiência de dados em vez de gerar um falso alarme.
+2. **O que os dados não representam?**
+   Um único sensor pluviométrico ou de nível de água por região inteira não representa a realidade de pontos isolados. O relevo urbano, bueiros entupidos e variações de pavimentação geram impactos locais que a leitura generalizada do sensor não capta por completo.
+3. **Por que o alerta apoia a decisão em vez de decidir por ela?**
+   O software processa números e probabilidades, mas carece de contexto humano imediato (como o escoamento específico da via ou prioridade dos locais de evacuação). O alerta atua como um gatilho situacional para que o operador humano tome a decisão final com segurança.
+
+---
+
+## 5. Como Executar o Projeto
+1. Certifique-se de ter o **Java JDK** e o **Maven** instalados.
+2. Abra o projeto na pasta raíz em uma IDE (ex: IntelliJ IDEA).
+3. Execute a classe principal do Spring Boot (`TerritoryPredictiveInsightsApplication.java`) ou rode no terminal:
+   `mvn spring-boot:run`
+4. Utilize o menu interativo no console para testar sensores, previsões, histórico e limiares.
+5. Para rodar os testes automatizados:
+   `mvn test`

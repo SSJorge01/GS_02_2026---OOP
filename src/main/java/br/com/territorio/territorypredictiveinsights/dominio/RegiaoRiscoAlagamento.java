@@ -10,7 +10,7 @@ public class RegiaoRiscoAlagamento extends ComponenteTerritorial {
 
     @Override
     public String verificarStatus() {
-        return "Região monitorada. Nível crítico: " + nivelCriticoMetros + "m.";
+        return "Região monitorada! Nível crítico: " + nivelCriticoMetros + "m.";
     }
 
     public double getNivelCriticoMetros() { return nivelCriticoMetros; }

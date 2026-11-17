@@ -27,7 +27,7 @@ public class ServicoMonitoramentoTest {
     private ServicoMonitoramento servicoMonitoramento;
 
     @Test
-    public void deveProcessarLeituraSensorComSucesso() {
+    public void processarLeituraSensorComSucesso() {
         // Arrange
         Sensor sensorMock = mock(Sensor.class);
         when(sensorMock.verificarFuncionamento()).thenReturn(true);
@@ -44,7 +44,7 @@ public class ServicoMonitoramentoTest {
     }
 
     @Test
-    public void deveLancarExcecaoQuandoSensorInoperante() {
+    public void lancarExcecaoQuandoSensorInoperante() {
         // Arrange
         Sensor sensorMock = mock(Sensor.class);
         when(sensorMock.verificarFuncionamento()).thenReturn(false);
@@ -59,7 +59,7 @@ public class ServicoMonitoramentoTest {
     }
 
     @Test
-    public void deveLancarExcecaoQuandoValorMedicaoNegativo() {
+    public void lancarExcecaoSeValorMedicaoNegativo() {
         // Arrange
         Sensor sensorMock = mock(Sensor.class);
         when(sensorMock.verificarFuncionamento()).thenReturn(true);
@@ -73,7 +73,7 @@ public class ServicoMonitoramentoTest {
     }
 
     @Test
-    public void singletonConfiguracaoDeveRetornarMesmaInstancia() {
+    public void singletonRetornarMesmaInstancia() {
         // Arrange & Act
         ConfiguracaoSistema config1 = ConfiguracaoSistema.getInstancia();
         ConfiguracaoSistema config2 = ConfiguracaoSistema.getInstancia();
@@ -83,7 +83,7 @@ public class ServicoMonitoramentoTest {
     }
 
     @Test
-    public void deveAlterarLimiarChuvaNoSingleton() {
+    public void singletonAlterarLimiarChuva() {
         // Arrange
         ConfiguracaoSistema config = ConfiguracaoSistema.getInstancia();
 
